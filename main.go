@@ -62,10 +62,7 @@ func child() {
 func cGroupConfig() {
 	cgroups := "/sys/fs/cgroup"
 	pids := filepath.Join(cgroups, "pids")
-	err := os.Mkdir(filepath.Join(pids, "hari"), 0755)
-	if err != nil {
-		panic(err)
-	}
+	os.Mkdir(filepath.Join(pids, "hari"), 0755)
 
 	ioutil.WriteFile(filepath.Join(pids, "hari/pids.max"), []byte("20"), 0700)
 	ioutil.WriteFile(filepath.Join(pids, "liz/notify_on_release"), []byte("1"), 0700)
