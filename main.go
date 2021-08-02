@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"syscall"
 )
 
@@ -37,6 +40,8 @@ func run() {
 func child() {
 	fmt.Printf("Running %v as %d\n", os.Args[2:], os.Getpid())
 
+	cGroupConfig()
+
 	syscall.Sethostname([]byte("container"))
 
 	syscall.Chroot("/home/hari/ubuntufs")
@@ -52,4 +57,17 @@ func child() {
 	cmd.Run()
 
 	syscall.Unmount("/proc", 0)
+}
+
+func cGroupConfig() {
+	cgroups := "/sys/fs/cgroup"
+	pids := filepath.Join(cgroups, "pids")
+	err := os.Mkdir(filepath.Join(pids, "hari"), 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	ioutil.WriteFile(filepath.Join(pids, "hari/pids.max"), []byte("20"), 0700)
+	ioutil.WriteFile(filepath.Join(pids, "liz/notify_on_release"), []byte("1"), 0700)
+	ioutil.WriteFile(filepath.Join(pids, "liz/cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700)
 }
