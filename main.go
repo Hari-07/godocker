@@ -38,6 +38,9 @@ func child() {
 
 	syscall.Sethostname([]byte("container"))
 
+	syscall.Chroot("/home/hari/ubuntufs")
+	syscall.Chdir("/")
+
 	cmd := exec.Command(os.Args[2], os.Args[3:]...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
